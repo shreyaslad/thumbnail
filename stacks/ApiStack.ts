@@ -11,9 +11,9 @@ export function ApiStack({ stack }: StackContext) {
     routes: {
       "GET /url": {
         function: {
-          handler: "packages/api/url.handler",
+          handler: "packages/functions/api/url.handler",
           environment: {
-            "RAW_VIDEOS_BUCKET_ARN": raw_videos_bucket.bucketArn
+            "RAW_VIDEOS_BUCKET_NAME": raw_videos_bucket.bucketName
           },
           permissions: [
             new aws_iam.PolicyStatement({

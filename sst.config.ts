@@ -1,5 +1,6 @@
 import { SSTConfig } from "sst";
 import { ApiStack } from "./stacks/ApiStack";
+import { FileStack } from "./stacks/FileStack";
 
 export default {
   config(_input) {
@@ -10,6 +11,7 @@ export default {
   },
   stacks(app) {
     app.stack(ApiStack);
+    app.stack(FileStack);
 
     app.setDefaultFunctionProps({
       runtime: "nodejs18.x",
