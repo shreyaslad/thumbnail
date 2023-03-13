@@ -1,6 +1,5 @@
 import { aws_iam, aws_s3 } from "aws-cdk-lib";
 import { StackContext, use, Api } from "sst/constructs";
-import { FileStack } from "./FileStack";
 
 export function ApiStack({ stack }: StackContext) {
   const raw_videos_bucket = aws_s3.Bucket.fromBucketName(
@@ -13,6 +12,9 @@ export function ApiStack({ stack }: StackContext) {
       "GET /url": {
         function: {
           handler: "packages/api/url.handler",
+          environment: {
+            "RAW_VIDEOS_BUCKET_ARN": raw_videos_bucket.bucketArn
+          },
           permissions: [
             new aws_iam.PolicyStatement({
               effect: aws_iam.Effect.ALLOW,
