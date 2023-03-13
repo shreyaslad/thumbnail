@@ -1,15 +1,16 @@
-import { aws_s3 } from 'aws-cdk-lib'
-import { StackContext, Bucket } from "@serverless-stack/resources";
+import { StackContext, Bucket } from "sst/constructs";
 
 export function FileStack({ stack }: StackContext) {
-  const RAW_VIDEOS_BUCKET_NAME: string = "thumbnail-raw-videos"
-
-  const raw_videos_bucket = aws_s3.Bucket.fromBucketName(stack, "thumbnail-raw-videos",
-    RAW_VIDEOS_BUCKET_NAME
-  );
-
+  const raw_videos_bucket = new Bucket(stack, "raw-upload-bucket", {
+    cdk: {
+        bucket: {
+            bucketName: `${stack.stage}-thumbnail-raw-videos`
+        }
+    }
+  });
+  
   stack.addOutputs({
-    RawVideoBucketArn: raw_videos_bucket.bucketArn
+    RawVideosBucketArn: raw_videos_bucket.bucketArn,
   });
 
   return {

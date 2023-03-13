@@ -1,32 +1,29 @@
-import { StackContext, use, Api } from "@serverless-stack/resources";
-import { aws_iam as iam } from "aws-cdk-lib";
-
+import { aws_iam, aws_s3 } from "aws-cdk-lib";
+import { StackContext, use, Api } from "sst/constructs";
 import { FileStack } from "./FileStack";
 
 export function ApiStack({ stack }: StackContext) {
-  const { raw_videos_bucket } = use(FileStack);
+  const raw_videos_bucket = aws_s3.Bucket.fromBucketName(
+    stack, "api-raw-videos-ibucket",
+    `${stack.stage}-thumbnail-raw-videos`
+  );
 
-  const raw_video_upload_policy = new iam.PolicyStatement({
-    effect: iam.Effect.ALLOW,
-    actions: ["s3:PutObject"],
-    resources: [`${raw_videos_bucket.bucketArn}/*`]
-  });
-
-  const api = new Api(stack, "thumbnail-api", {
+  const api = new Api(stack, "api", {
     routes: {
-      "GET /upload": {
+      "GET /url": {
         function: {
-          handler: "functions/upload.handler",
-          permissions: [raw_video_upload_policy],
-          environment: {
-            RAW_VIDEO_BUCKET_NAME: raw_videos_bucket.bucketName
-          }
-        },
-       }
+          handler: "packages/api/url.handler",
+          permissions: [
+            new aws_iam.PolicyStatement({
+              effect: aws_iam.Effect.ALLOW,
+              actions: ["s3:*"],
+              resources: [raw_videos_bucket.bucketArn]
+            })
+          ]
+        }
+      }
     },
   });
-
-  api.attachPermissionsToRoute("GET /upload", [raw_video_upload_policy])
 
   stack.addOutputs({
     ApiEndpoint: api.url,
