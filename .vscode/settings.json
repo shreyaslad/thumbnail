@@ -1,5 +1,6 @@
 {
   "search.exclude": {
     "**/.sst": true
-  }
+  },
+  "editor.tabSize": 2
 }
